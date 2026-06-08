@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+
+# Build
+dist/
+
+# Coverage
+coverage/
+
+# IDE
+.vscode/
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
