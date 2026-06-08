@@ -33,14 +33,12 @@ const registerUser = async ({ fullName, email, phone, password, role }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = await User.create({
-    fullName,
-    email,
-    phone,
-    password: hashedPassword,
-    // Only allow role override if explicitly provided; defaults to "student" via schema
-    ...(role && { role }),
-  });
+const user = await User.create({
+  fullName,
+  email,
+  phone,
+  password: hashedPassword,
+});
 
   const token = generateToken(user._id, user.role);
 
