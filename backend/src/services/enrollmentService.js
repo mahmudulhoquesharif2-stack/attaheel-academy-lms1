@@ -7,7 +7,8 @@ import AppError from "../utils/AppError.js";
  */
 const createEnrollment = async (
   studentId,
-  courseId
+  courseId,
+  studentType
 ) => {
   const course = await Course.findById(courseId);
 
@@ -25,16 +26,41 @@ const createEnrollment = async (
     });
 
   if (existingEnrollment) {
-    throw new AppError(
-      "Already enrolled in this course",
-      400
-    );
+    if (
+      existingEnrollment.approvalStatus ===
+      "pending"
+    ) {
+      throw new AppError(
+        "You already have a pending enrollment for this course",
+        400
+      );
+    }
+
+    if (
+      existingEnrollment.approvalStatus ===
+      "approved"
+    ) {
+      throw new AppError(
+        "You are already enrolled in this course",
+        400
+      );
+    }
+
+    if (
+      existingEnrollment.approvalStatus ===
+      "rejected"
+    ) {
+      await Enrollment.findByIdAndDelete(
+        existingEnrollment._id
+      );
+    }
   }
 
   const enrollment =
     await Enrollment.create({
       student: studentId,
       course: courseId,
+      studentType,
       createdBy: studentId,
     });
 
@@ -42,13 +68,15 @@ const createEnrollment = async (
 };
 
 /**
- * Student My Courses
+ * My Courses
  */
 const getMyCourses = async (
   studentId
 ) => {
   return Enrollment.find({
     student: studentId,
+    approvalStatus: "approved",
+    paymentStatus: "paid",
   })
     .populate("course")
     .sort({
@@ -57,7 +85,7 @@ const getMyCourses = async (
 };
 
 /**
- * Admin All Enrollments
+ * Admin - All Enrollments
  */
 const getAllEnrollments =
   async () => {
@@ -70,6 +98,11 @@ const getAllEnrollments =
         "course",
         "title slug"
       )
+      .populate(
+  "batch",
+  "name batchType classTime"
+)
+
       .sort({
         createdAt: -1,
       });
@@ -125,10 +158,37 @@ const rejectEnrollment =
     return enrollment;
   };
 
+  /**
+ * Assign Batch
+ */
+const assignBatch = async (
+  enrollmentId,
+  batchId
+) => {
+  const enrollment =
+    await Enrollment.findById(
+      enrollmentId
+    );
+
+  if (!enrollment) {
+    throw new AppError(
+      "Enrollment not found",
+      404
+    );
+  }
+
+  enrollment.batch = batchId;
+
+  await enrollment.save();
+
+  return enrollment;
+};
+
 export default {
   createEnrollment,
   getMyCourses,
   getAllEnrollments,
   approveEnrollment,
   rejectEnrollment,
+  assignBatch,
 };

@@ -1,5 +1,6 @@
 import express from "express";
 import uploadController from "../controllers/uploadController.js";
+import upload from "../middleware/uploadMiddleware.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { authorize } from "../middleware/roleMiddleware.js";
 
@@ -8,7 +9,6 @@ const router = express.Router();
 /**
  * Upload File
  */
-
 router.post(
   "/",
   protect,
@@ -17,13 +17,13 @@ router.post(
     "admin",
     "super_admin"
   ),
+  upload.single("file"),
   uploadController.uploadFile
 );
 
 /**
  * Delete File
  */
-
 router.delete(
   "/:publicId",
   protect,

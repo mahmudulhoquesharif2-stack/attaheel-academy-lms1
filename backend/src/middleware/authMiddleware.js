@@ -23,9 +23,8 @@ export const protect = asyncHandler(async (req, res, next) => {
     throw new AppError("Not authorized. Please log in.", 401);
   }
 
-  // Reject tokens that were explicitly logged out
   const blacklistedToken = await TokenBlacklist.findOne({ token });
-
+// Check if the token is blacklisted (e.g. after logout)
   if (blacklistedToken) {
     throw new AppError("Session expired. Please log in again.", 401);
   }

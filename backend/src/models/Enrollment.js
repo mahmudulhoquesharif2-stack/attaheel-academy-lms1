@@ -14,6 +14,12 @@ const enrollmentSchema = new mongoose.Schema(
       required: true,
     },
 
+    studentType: {
+      type: String,
+      enum: ["madrasa", "general"],
+      required: true,
+    },
+
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],
@@ -31,10 +37,11 @@ const enrollmentSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    batch: {
-      type: String,
-      default: "",
-    },
+  batch: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Batch",
+  default: null,
+},
 
     notes: {
       type: String,

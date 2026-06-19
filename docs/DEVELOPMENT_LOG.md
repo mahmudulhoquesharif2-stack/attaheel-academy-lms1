@@ -1,60 +1,155 @@
-# DEVELOPMENT_LOG.md
+# DESIGN_TOKEN.md
 
-## Version 1.0
-
----
-
-### Completed
-
-✓ Project Planning
-
-✓ Folder Structure
-
-✓ MongoDB Atlas Setup
-
-✓ Frontend Setup
-
-✓ Backend Setup
-
-✓ Documentation
+Version 1.0
 
 ---
 
-### Pending
+# Color Tokens
 
-Authentication
+Primary
 
-Database Models
+Secondary
 
-REST APIs
+Surface
 
-Frontend UI
+Glass
 
-Dashboard
+Accent
 
-Payment System
+Success
 
-Zoom Module
+Warning
 
-Deployment
+Danger
 
 ---
 
-Last Updated
+# Radius Tokens
 
-June 2026
-# Sprint 01
+xs
 
-Date: 07 June 2026
+sm
 
-## Completed
+md
 
-- Backend Structure Created
-- Express Setup
-- ES Module Setup
-- dotenv Configured
-- MongoDB Atlas Connected
-- Mongoose Connected
-- Server Running Successfully
+lg
 
-Status: ✅ Completed
+xl
+
+2xl
+
+full
+
+---
+
+# Shadow Tokens
+
+soft
+
+glass
+
+floating
+
+hero
+
+premium
+
+---
+
+# Blur Tokens
+
+4
+
+8
+
+12
+
+16
+
+20
+
+24
+
+---
+
+# Opacity
+
+10%
+
+20%
+
+40%
+
+60%
+
+80%
+
+100%
+
+---
+
+# Spacing
+
+4
+
+8
+
+12
+
+16
+
+24
+
+32
+
+48
+
+64
+
+96
+
+128
+
+---
+
+# Transition
+
+Fast
+
+Normal
+
+Slow
+
+Organic
+
+---
+
+# Animation Duration
+
+150ms
+
+250ms
+
+350ms
+
+500ms
+
+800ms
+
+---
+
+# Container Width
+
+Mobile
+
+Tablet
+
+Desktop
+
+Wide
+
+Ultra Wide
+
+---
+
+END

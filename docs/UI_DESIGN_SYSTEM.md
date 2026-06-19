@@ -53,7 +53,7 @@ Design Style
 
 • Soft Neumorphism
 
-• Apple Inspired Minimal Luxury
+• Apple phone Inspired Minimal Luxury
 
 • Editorial Composition
 

@@ -21,6 +21,12 @@ router.patch(
   notificationController.markAsRead
 );
 
+router.delete(
+  "/:id",
+  protect,
+  notificationController.deleteNotification
+);
+
 /**
  * Admin Routes
  */

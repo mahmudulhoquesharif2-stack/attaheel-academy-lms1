@@ -2,27 +2,31 @@
 
 # At Taheel Academy LMS
 
-## MongoDB Schema Design
+## MongoDB Database Schema
 
-Version: 1.0
+Version: 2.0
+
+Status: Active
 
 ---
 
-# Design Principles
+# Database Rules
 
-* Use MongoDB Atlas
-* Use Mongoose
-* Use ObjectId References
-* Enable timestamps for every collection
-* Keep schema scalable and normalized
+* MongoDB Atlas
+* Mongoose ODM
+* ObjectId References
+* timestamps: true
+* Scalable Architecture
+* Modular Collections
+* RBAC Ready
 
 ---
 
 # Collection: users
 
-Purpose:
+Purpose
 
-Store all registered users.
+Store all system users.
 
 Fields
 
@@ -32,7 +36,7 @@ fullName
 
 email (unique)
 
-phone
+phone (unique)
 
 password (hashed)
 
@@ -40,13 +44,15 @@ role
 
 Possible Values
 
-user
-
 student
+
+teacher
 
 admin
 
-avatar
+super_admin
+
+profileImage
 
 isActive
 
@@ -58,9 +64,9 @@ updatedAt
 
 # Collection: courses
 
-Purpose:
+Purpose
 
-Store all academy courses.
+Store academy courses.
 
 Fields
 
@@ -68,15 +74,39 @@ _id
 
 title
 
-slug
+slug (unique)
+
+shortDescription
 
 description
 
-price
-
 thumbnail
 
+durationMonths
+
+feeMadrasa
+
+feeGeneral
+
+freeClassDate
+
+admissionDeadline
+
+classStartDate
+
+status
+
+Possible Values
+
+draft
+
+published
+
+archived
+
 isPublished
+
+createdBy
 
 createdAt
 
@@ -84,23 +114,95 @@ updatedAt
 
 ---
 
-# Collection: payments
+# Collection: enrollments
 
-Purpose:
+Purpose
 
-Store payment requests.
+Store course enrollments.
 
 Fields
 
 _id
 
-user
+student
 
 (ObjectId → users)
 
 course
 
 (ObjectId → courses)
+
+studentType
+
+Possible Values
+
+madrasa
+
+general
+
+paymentStatus
+
+Possible Values
+
+pending
+
+paid
+
+failed
+
+approvalStatus
+
+Possible Values
+
+pending
+
+approved
+
+rejected
+
+batch
+
+notes
+
+enrollmentDate
+
+createdBy
+
+createdAt
+
+updatedAt
+
+Indexes
+
+student + course
+
+(unique)
+
+---
+
+# Collection: payments
+
+Purpose
+
+Store payment submissions.
+
+Fields
+
+_id
+
+student
+
+(ObjectId → users)
+
+course
+
+(ObjectId → courses)
+
+enrollment
+
+(ObjectId → enrollments)
+
+amount
 
 paymentMethod
 
@@ -112,31 +214,35 @@ nagad
 
 transactionId
 
-status
+paymentStatus
 
 Possible Values
 
 pending
 
-approved
+paid
 
-rejected
+failed
 
-submittedAt
-
-approvedAt
+paidAt
 
 createdAt
 
 updatedAt
 
+Indexes
+
+transactionId
+
+(unique)
+
 ---
 
-# Collection: zoomLinks
+# Collection: assignments
 
-Purpose:
+Purpose
 
-Store Zoom meeting links.
+Store assignments.
 
 Fields
 
@@ -144,17 +250,97 @@ _id
 
 title
 
-zoomUrl
+description
 
-meetingId
+course
 
-passcode
+createdBy
 
-courseIds
+dueDate
 
-(Array of Course ObjectIds)
+status
 
-isActive
+createdAt
+
+updatedAt
+
+---
+
+# Collection: assignmentSubmissions
+
+Purpose
+
+Store assignment submissions.
+
+Fields
+
+_id
+
+assignment
+
+student
+
+submissionText
+
+submissionFile
+
+obtainedMarks
+
+feedback
+
+status
+
+createdAt
+
+updatedAt
+
+---
+
+# Collection: exams
+
+Purpose
+
+Store exams.
+
+Fields
+
+_id
+
+title
+
+description
+
+course
+
+examDate
+
+totalMarks
+
+createdBy
+
+createdAt
+
+updatedAt
+
+---
+
+# Collection: examResults
+
+Purpose
+
+Store exam results.
+
+Fields
+
+_id
+
+exam
+
+student
+
+obtainedMarks
+
+remarks
 
 createdAt
 
@@ -164,21 +350,39 @@ updatedAt
 
 # Collection: notifications
 
-Purpose:
+Purpose
 
-Store system notifications.
+Store user notifications.
 
 Fields
 
 _id
 
-user
+recipient
 
 title
 
 message
 
+type
+
+Possible Values
+
+system
+
+payment
+
+enrollment
+
+course
+
+announcement
+
 isRead
+
+readAt
+
+createdBy
 
 createdAt
 
@@ -186,13 +390,71 @@ updatedAt
 
 ---
 
-# User Relationships
+# Collection: activities
+
+Purpose
+
+Store system activities.
+
+Fields
+
+_id
+
+actor
+
+action
+
+entityType
+
+Possible Values
+
+user
+
+course
+
+enrollment
+
+payment
+
+system
+
+entityId
+
+title
+
+description
+
+metadata
+
+visibility
+
+Possible Values
+
+public
+
+admin
+
+private
+
+createdAt
+
+updatedAt
+
+Indexes
+
+createdAt
+
+(descending)
+
+---
+
+# Collection Relationships
 
 User
 
 ↓
 
-Payment
+Enrollment
 
 ↓
 
@@ -200,11 +462,51 @@ Course
 
 ↓
 
-Zoom Link
+Payment
 
 ↓
 
 Notification
+
+↓
+
+Activity
+
+---
+
+# Access Architecture
+
+Important Rule
+
+Course access is NOT controlled by role.
+
+Course access is controlled by:
+
+Enrollment
+
+*
+
+Payment Status
+
+*
+
+Approval Status
+
+Example
+
+Student
+
+↓
+
+Enrollment Approved
+
+↓
+
+Payment Paid
+
+↓
+
+Course Access Granted
 
 ---
 
@@ -212,83 +514,89 @@ Notification
 
 users.email
 
-Unique
+(unique)
+
+users.phone
+
+(unique)
 
 courses.slug
 
-Unique
+(unique)
 
 payments.transactionId
 
-Indexed
+(unique)
 
-notifications.user
+enrollments.student + course
 
-Indexed
+(unique)
 
----
+activities.createdAt
 
-# Common Mongoose Options
+(indexed)
 
-{
-timestamps: true
-}
+notifications.recipient
 
----
-
-# Future Collections
-
-teachers
-
-assignments
-
-quizzes
-
-attendance
-
-certificates
-
-liveClasses
-
-supportTickets
-
-activityLogs
+(indexed)
 
 ---
 
-# Data Integrity Rules
+# Security Rules
 
-Password:
+Password
 
-Always hashed
+Always Hashed
 
-Email:
+Role
 
-Always unique
+Enum Validation
 
-Role:
+Payment Status
 
-Enum validation
+Enum Validation
 
-Payment Status:
+Approval Status
 
-Enum validation
+Enum Validation
 
-Course Slug:
+Course Slug
+
+Unique
+
+Transaction ID
 
 Unique
 
 ---
 
-# Soft Delete Policy
+# Soft Delete Strategy
 
-Future Support:
+Reserved For Future
 
 isDeleted
 
 deletedAt
 
-instead of permanent delete.
+---
+
+# Future Collections
+
+zoomLinks
+
+certificates
+
+attendance
+
+liveClasses
+
+supportTickets
+
+paymentGatewayLogs
+
+systemSettings
+
+auditLogs
 
 ---
 
@@ -298,29 +606,45 @@ Collections
 
 camelCase
 
-Example
+Examples
 
-zoomLinks
+assignmentSubmissions
+
+examResults
 
 Fields
 
 camelCase
 
-Example
+Examples
 
 transactionId
+
+paymentStatus
+
+createdAt
 
 Models
 
 PascalCase
 
-Example
+Examples
 
 User
 
+Course
+
+Enrollment
+
 Payment
 
-Course
+Assignment
+
+Exam
+
+Activity
+
+Notification
 
 ---
 

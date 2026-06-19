@@ -4,7 +4,9 @@
 
 ## REST API Reference
 
-Version: 1.0
+Version: 2.0
+
+Status: Active
 
 ---
 
@@ -20,22 +22,27 @@ Production
 
 ---
 
-# API Response Format
+# Standard Response Format
 
 Success
 
+```json
 {
-"success": true,
-"message": "Operation successful",
-"data": {}
+  "success": true,
+  "message": "Operation successful",
+  "data": {}
 }
+```
 
 Error
 
+```json
 {
-"success": false,
-"message": "Something went wrong"
+  "success": false,
+  "message": "Something went wrong",
+  "data": null
 }
+```
 
 ---
 
@@ -49,12 +56,14 @@ POST
 
 Body
 
+```json
 {
-"fullName": "",
-"email": "",
-"phone": "",
-"password": ""
+  "fullName": "",
+  "email": "",
+  "phone": "",
+  "password": ""
 }
+```
 
 Response
 
@@ -70,26 +79,38 @@ POST
 
 Body
 
+```json
 {
-"email": "",
-"password": ""
+  "email": "",
+  "password": ""
 }
+```
 
 Response
 
 200 OK
 
-Returns:
+Returns
 
-JWT Token
-
-User Information
-
-Role
+* JWT Token
+* User Information
+* Role
 
 ---
 
-## Get Profile
+## Logout
+
+POST
+
+/api/v1/auth/logout
+
+Protected
+
+JWT Required
+
+---
+
+## Profile
 
 GET
 
@@ -98,28 +119,6 @@ GET
 Protected
 
 JWT Required
-
----
-
-# User APIs
-
-## Update Profile
-
-PATCH
-
-/api/v1/users/profile
-
-Protected
-
----
-
-## Change Password
-
-PATCH
-
-/api/v1/users/change-password
-
-Protected
 
 ---
 
@@ -145,6 +144,116 @@ Public
 
 ---
 
+## Create Course
+
+POST
+
+/api/v1/courses
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
+## Update Course
+
+PATCH
+
+/api/v1/courses/:id
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
+## Delete Course
+
+DELETE
+
+/api/v1/courses/:id
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
+# Enrollment APIs
+
+## Create Enrollment
+
+POST
+
+/api/v1/enrollments
+
+Role
+
+Student
+
+---
+
+## My Enrollments
+
+GET
+
+/api/v1/enrollments/my-enrollments
+
+Role
+
+Student
+
+---
+
+## All Enrollments
+
+GET
+
+/api/v1/enrollments
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
+## Approve Enrollment
+
+PATCH
+
+/api/v1/enrollments/:id/approve
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
+## Reject Enrollment
+
+PATCH
+
+/api/v1/enrollments/:id/reject
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
 # Payment APIs
 
 ## Submit Payment
@@ -153,107 +262,58 @@ POST
 
 /api/v1/payments
 
-Role:
+Role
 
-User
+Student
 
-Request
+Body
 
+```json
 {
-"courseId": "",
-"paymentMethod": "",
-"transactionId": ""
+  "enrollmentId": "",
+  "amount": 3900,
+  "paymentMethod": "bkash",
+  "transactionId": ""
 }
+```
 
-Status
+Validation
 
-Pending
+Amount must match course fee.
+
+Madrasa
+
+3900
+
+General
+
+5300
 
 ---
 
-## Get My Payments
+## My Payments
 
 GET
 
-/api/v1/payments/my
+/api/v1/payments/my-payments
 
-Protected
-
----
-
-# Student APIs
-
-## Student Dashboard
-
-GET
-
-/api/v1/student/dashboard
-
-Role:
+Role
 
 Student
 
 ---
 
-## My Courses
+## All Payments
 
 GET
 
-/api/v1/student/courses
+/api/v1/payments
 
-Role:
-
-Student
-
----
-
-## Zoom Links
-
-GET
-
-/api/v1/student/zoom-links
-
-Role:
-
-Student
-
----
-
-# Admin APIs
-
-## Dashboard
-
-GET
-
-/api/v1/admin/dashboard
-
-Role:
+Role
 
 Admin
 
----
-
-## Get Users
-
-GET
-
-/api/v1/admin/users
-
----
-
-## Get Students
-
-GET
-
-/api/v1/admin/students
-
----
-
-## Get Pending Payments
-
-GET
-
-/api/v1/admin/payments/pending
+Super Admin
 
 ---
 
@@ -261,15 +321,18 @@ GET
 
 PATCH
 
-/api/v1/admin/payments/:id/approve
+/api/v1/payments/:id/approve
 
-Result:
+Role
 
-User Role
+Admin
 
-↓
+Super Admin
 
-Student
+Result
+
+* Payment Status = Paid
+* Enrollment Status Updated
 
 ---
 
@@ -277,37 +340,291 @@ Student
 
 PATCH
 
-/api/v1/admin/payments/:id/reject
+/api/v1/payments/:id/reject
+
+Role
+
+Admin
+
+Super Admin
+
+Result
+
+* Payment Status = Failed
 
 ---
 
-# Zoom APIs
+# Dashboard APIs
 
-## Create Zoom Link
+## Dashboard Statistics
+
+GET
+
+/api/v1/dashboard/stats
+
+Role
+
+Admin
+
+Super Admin
+
+Returns
+
+* Total Users
+* Total Students
+* Total Teachers
+* Total Courses
+* Total Enrollments
+* Total Payments
+* Pending Payments
+* Pending Enrollments
+* Total Revenue
+
+---
+
+# Assignment APIs
+
+## Create Assignment
 
 POST
 
-/api/v1/admin/zoom-links
+/api/v1/assignments
 
-Role:
+Teacher
 
 Admin
 
 ---
 
-## Update Zoom Link
+## Get Assignments
 
-PATCH
+GET
 
-/api/v1/admin/zoom-links/:id
+/api/v1/assignments
+
+Protected
 
 ---
 
-## Delete Zoom Link
+## Update Assignment
+
+PATCH
+
+/api/v1/assignments/:id
+
+Teacher
+
+Admin
+
+---
+
+## Delete Assignment
 
 DELETE
 
-/api/v1/admin/zoom-links/:id
+/api/v1/assignments/:id
+
+Teacher
+
+Admin
+
+---
+
+# Assignment Submission APIs
+
+## Submit Assignment
+
+POST
+
+/api/v1/assignment-submissions
+
+Student
+
+---
+
+## My Submissions
+
+GET
+
+/api/v1/assignment-submissions/my-submissions
+
+Student
+
+---
+
+## Review Submission
+
+PATCH
+
+/api/v1/assignment-submissions/:id/review
+
+Teacher
+
+Admin
+
+---
+
+# Exam APIs
+
+## Create Exam
+
+POST
+
+/api/v1/exams
+
+Teacher
+
+Admin
+
+---
+
+## Get Exams
+
+GET
+
+/api/v1/exams
+
+Protected
+
+---
+
+## Update Exam
+
+PATCH
+
+/api/v1/exams/:id
+
+Teacher
+
+Admin
+
+---
+
+## Delete Exam
+
+DELETE
+
+/api/v1/exams/:id
+
+Teacher
+
+Admin
+
+---
+
+# Exam Result APIs
+
+## Publish Result
+
+POST
+
+/api/v1/exam-results
+
+Teacher
+
+Admin
+
+---
+
+## Get Results
+
+GET
+
+/api/v1/exam-results
+
+Protected
+
+---
+
+# Notification APIs
+
+## Get Notifications
+
+GET
+
+/api/v1/notifications
+
+Protected
+
+---
+
+## Mark As Read
+
+PATCH
+
+/api/v1/notifications/:id/read
+
+Protected
+
+---
+
+# Activity APIs
+
+## Get Activities
+
+GET
+
+/api/v1/activities
+
+Role
+
+Admin
+
+Super Admin
+
+---
+
+# Upload APIs
+
+## Upload File
+
+POST
+
+/api/v1/uploads
+
+Protected
+
+---
+
+# Authentication
+
+JWT
+
+Authorization Header
+
+```text
+Bearer TOKEN
+```
+
+---
+
+# Current Payment System
+
+Version 1
+
+Manual Verification
+
+Supported
+
+* bKash
+* Nagad
+
+Admin manually approves payments.
+
+---
+
+# Future Payment System
+
+Version 2
+
+Automatic Gateway Verification
+
+Supported
+
+* bKash API
+* Nagad API
+
+Payment approval will be automatic.
 
 ---
 
@@ -329,16 +646,6 @@ DELETE
 
 ---
 
-# Authentication
-
-JWT
-
-Authorization Header
-
-Bearer TOKEN
-
----
-
 # Version Policy
 
 Current
@@ -350,5 +657,7 @@ Future
 v2
 
 Backward compatible whenever possible.
+
+---
 
 END OF DOCUMENT

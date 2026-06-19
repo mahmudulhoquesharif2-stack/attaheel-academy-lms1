@@ -1,3 +1,5 @@
+import batchRoutes from "./routes/batchRoutes.js"; 
+import debugRoutes from "./routes/debugRoutes.js";
 import examRoutes from "./routes/examRoutes.js";
 import adminPanelRoutes from "./routes/adminPanelRoutes.js";
 import studentPortalRoutes from "./routes/studentPortalRoutes.js";
@@ -87,6 +89,12 @@ app.use(
   "/api/v1/admin-panel",
   adminPanelRoutes
 );
+app.use("/api/v1/debug", debugRoutes);
+app.use(
+  "/api/v1/batches",
+  batchRoutes
+);
+
 
 /**
  * Error Handling

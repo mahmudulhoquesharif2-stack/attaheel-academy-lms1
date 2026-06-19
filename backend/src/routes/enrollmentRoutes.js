@@ -6,36 +6,40 @@ import { authorize } from "../middleware/roleMiddleware.js";
 const router = express.Router();
 
 router.post(
-  "/",
-  protect,
-  enrollmentController.createEnrollment
+"/",
+protect,
+enrollmentController.createEnrollment
 );
 
 router.get(
-  "/my-courses",
+"/my-courses",
+protect,
+enrollmentController.getMyCourses
+);
+router.patch(
+  "/:id/assign-batch",
   protect,
-  enrollmentController.getMyCourses
+  authorize("admin", "super_admin"),
+  enrollmentController.assignBatch
 );
 
 router.get(
-  "/",
-  protect,
-  authorize("admin", "super_admin"),
-  enrollmentController.getAllEnrollments
+"/",
+protect,
+authorize("admin", "super_admin"),
+enrollmentController.getAllEnrollments
 );
-
 router.patch(
-  "/:id/approve",
-  protect,
-  authorize("admin", "super_admin"),
-  enrollmentController.approveEnrollment
+"/:id/approve",
+protect,
+authorize("admin", "super_admin"),
+enrollmentController.approveEnrollment
 );
-
 router.patch(
-  "/:id/reject",
-  protect,
-  authorize("admin", "super_admin"),
-  enrollmentController.rejectEnrollment
+"/:id/reject",
+protect,
+authorize("admin", "super_admin"),
+enrollmentController.rejectEnrollment
 );
 
 export default router;

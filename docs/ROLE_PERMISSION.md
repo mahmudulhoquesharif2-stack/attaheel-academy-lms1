@@ -2,109 +2,209 @@
 
 # At Taheel Academy LMS
 
-Version: 1.0
+Version: 2.0
+
+Status: Active
 
 ---
 
-# Roles
+# Official Role System
 
-1. Guest
+The LMS uses Role Based Access Control (RBAC).
 
-2. User
+Current Roles
 
-3. Student
+1. Visitor
+
+2. Student
+
+3. Teacher
 
 4. Admin
 
+5. Super Admin
+
 ---
 
-# Guest Permissions
+# Visitor Permissions
+
+Unauthenticated users.
+
+Can
 
 ✓ View Homepage
 
-✓ View Course Details
+✓ View Landing Page
+
+✓ View Courses
+
+✓ View Pricing
 
 ✓ Register
 
 ✓ Login
 
-✓ Contact
+✓ Contact Academy
 
----
+Cannot
 
-# User Permissions
+✗ Access Dashboard
 
-✓ Dashboard
+✗ Access Payments
 
-✓ Update Profile
+✗ Access Enrollments
 
-✓ Submit Payment
-
-✓ View Payment Status
+✗ Access Student Features
 
 ---
 
 # Student Permissions
 
-✓ Student Dashboard
+Authenticated users.
 
-✓ My Courses
+Default role after registration.
 
-✓ Zoom Links
+Can
 
-✓ Class Schedule
+✓ View Dashboard
 
-✓ Level Progress
+✓ Update Profile
 
-✓ Assessment
+✓ Browse Courses
 
-✓ Certificate
+✓ Create Enrollment
 
-✓ Notifications
+✓ Submit Payment
 
-✓ Support
+✓ View Payment Status
+
+✓ View My Enrollments
+
+✓ View My Courses
+
+✓ View Notifications
+
+✓ Submit Assignments
+
+✓ View Exam Results
+
+Cannot
+
+✗ Manage Users
+
+✗ Manage Courses
+
+✗ Approve Payments
+
+✗ Access Admin Panel
+
+---
+
+# Teacher Permissions
+
+Academic management role.
+
+Can
+
+✓ Access Teacher Dashboard
+
+✓ View Assigned Courses
+
+✓ Create Assignments
+
+✓ Update Assignments
+
+✓ Delete Assignments
+
+✓ Create Exams
+
+✓ Publish Results
+
+✓ Review Assignment Submissions
+
+✓ View Student Progress
+
+Cannot
+
+✗ Manage Users
+
+✗ Approve Payments
+
+✗ Access System Settings
 
 ---
 
 # Admin Permissions
 
-✓ Dashboard
+System management role.
 
-✓ Manage Users
+Can
+
+✓ Access Admin Dashboard
 
 ✓ Manage Students
 
 ✓ Manage Courses
 
-✓ Manage Levels
+✓ Manage Enrollments
 
-✓ Manage Assessments
+✓ Approve Enrollments
+
+✓ Reject Enrollments
 
 ✓ Manage Payments
 
-✓ Approve Payment
+✓ Approve Payments
 
-✓ Reject Payment
-
-✓ Manage Zoom Links
-
-✓ Manage Schedules
-
-✓ Manage Certificates
+✓ Reject Payments
 
 ✓ Manage Notifications
 
-✓ Support Tickets
+✓ View Activities
 
-✓ Admission Renewal
+✓ View Analytics
 
-✓ Settings
+✓ Manage Uploads
+
+✓ Manage Student Portal
+
+Cannot
+
+✗ Manage Super Admin Accounts
+
+✗ Access Root-Level Settings
 
 ---
 
-# Role Upgrade Flow
+# Super Admin Permissions
 
-Guest
+Highest level authority.
+
+Can
+
+✓ Everything Admin Can Do
+
+✓ Manage Admin Accounts
+
+✓ Promote Users
+
+✓ Demote Users
+
+✓ Manage System Settings
+
+✓ Access All Modules
+
+✓ Full Analytics Access
+
+✓ Full Activity Access
+
+✓ System-Wide Control
+
+---
+
+# Enrollment Workflow
+
+Visitor
 
 ↓
 
@@ -112,18 +212,142 @@ Register
 
 ↓
 
-User
-
-↓
-
-Payment Approved
-
-↓
-
 Student
+
+↓
+
+Create Enrollment
+
+↓
+
+Submit Payment
+
+↓
+
+Pending Review
+
+↓
+
+Admin Approval
+
+↓
+
+Enrollment Activated
+
+↓
+
+Course Access Granted
 
 ---
 
-Admin can manually promote or demote any user.
+# Payment Workflow
+
+Student
+
+↓
+
+Create Enrollment
+
+↓
+
+Submit Payment
+
+↓
+
+Pending
+
+↓
+
+Admin Review
+
+↓
+
+Approved
+
+↓
+
+Enrollment Activated
+
+↓
+
+Course Access
+
+---
+
+# Important Architecture Rule
+
+Course access is NOT controlled by role.
+
+Course access is controlled by:
+
+Enrollment
+
+*
+
+Payment Status
+
+*
+
+Approval Status
+
+Example
+
+A Student can have:
+
+0 Courses
+
+1 Course
+
+5 Courses
+
+10 Courses
+
+while remaining in the same role.
+
+---
+
+# Future Roles
+
+Reserved Roles
+
+* Moderator
+* Support Team
+* Course Manager
+* Finance Manager
+
+The architecture must support future role expansion.
+
+---
+
+# Authorization Middleware
+
+Example
+
+```javascript
+authorize(
+  "admin",
+  "super_admin"
+);
+```
+
+Example
+
+```javascript
+authorize(
+  "teacher",
+  "admin",
+  "super_admin"
+);
+```
+
+---
+
+# Security Rule
+
+Never trust frontend permissions.
+
+All permission checks must be enforced on the backend.
+
+---
 
 END OF DOCUMENT
